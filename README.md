@@ -13,7 +13,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-<h3 align="center">BosterItemSpawner</h3>
+<h3 align="center">BosterChat</h3>
 
   <p align="center">
     <br />
