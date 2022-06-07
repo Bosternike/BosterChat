@@ -1,0 +1,4 @@
+name: BosterChat
+main: net.boster.chat.bungee.BosterChatBungee
+author: Bosternike
+version: 1.0.0

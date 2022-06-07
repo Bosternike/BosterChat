@@ -1,0 +1,5 @@
+name: BosterChat
+main: net.boster.chat.bukkit.BosterChatBukkit
+author: Bosternike
+version: 1.0.0
+softdepend: [PlaceholderAPI, Vault, Towny, SimpleClans, EpicSet-Clans, UltimateClans]

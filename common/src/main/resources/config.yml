@@ -1,0 +1,118 @@
+# This plugin has been created by Bosternike (Discord: Bosternike#7428).
+#
+# COMMANDS:
+# /bosterchat - main plugin command.
+#
+# PERMISSIONS:
+# /bosterchat - boster.chat.command
+# /bosterchat reload - boster.chat.command.reload
+# /bosterchat help - boster.chat.command.help
+
+Placeholders:
+  NoClan: ''
+  NoTown: ''
+  NoNation: ''
+
+Settings:
+  # All following settings can be configured in chat settings.
+  # End messages with dot?
+  DotInsertion:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: true
+      Permission: 'boster.chat.dot'
+  # Should the first character of message be capital?
+  CapitalizeMessage:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: true
+      Permission: 'boster.chat.capitalize'
+  # Should player be able to use color code (like &)?
+  ColorizeMessage:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: true
+      Permission: 'boster.chat.color'
+  # Check for messages similarity.
+  CheckSimilarity:
+    Enabled: true
+    # Similarity in percents.
+    # If messages similarity >= 80%, message will be rejected.
+    Similarity: 80
+    Message:
+    - '&cYour messages are too similar.'
+  # Check for exact words.
+  DeniedWords:
+    # Permission to override this check.
+    OverridePermission:
+      Enabled: false
+      Permission: 'boster.chat.denied.words.override'
+    Enabled: true
+    list:
+    - 'fuck'
+    Result:
+      # It will replace each character of the word with the following symbol.
+      replaceChars: '*'
+  # Check if message contains any of the following list.
+  DeniedContents:
+    # Permission to override this check.
+    OverridePermission:
+      Enabled: false
+      Permission: 'boster.chat.denied.contents.override'
+    Enabled: true
+    list:
+    - 'fuckx'
+    Result:
+      message:
+      - "&cSuch contents as '%content%' are disallowed."
+  DenyAddress:
+    Enabled: true
+    # Permission to override this check.
+    OverridePermission:
+      Enabled: false
+      Permission: 'boster.chat.deny.address.override'
+    Result:
+      # It will replace the whole IP with the following word.
+      # WARNING: Result "replaceChars" IS NOT SUPPORTED!
+      replace: 'your.server.net'
+
+CooldownFormat:
+  second: 'second'
+  some_seconds: 'seconds'
+  seconds: 'seconds'
+  minute: 'minute'
+  some_minutes: 'minutes'
+  minutes: 'minutes'
+  hour: 'hour'
+  some_hours: 'hours'
+  hours: 'hours'
+  day: 'day'
+  some_days: 'days'
+  days: 'days'
+CooldownMessage:
+  Message:
+    Enabled: true
+    text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
+  Title:
+    Enabled: false
+    text: '&fCooldown!'
+  SubTitle:
+    Enabled: false
+    text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
+  Actionbar:
+    Enabled: true
+    text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
+
+Messages:
+  noPermission: "&d&lBosterChat &8&l| &cYou don't have permission for this command!"
+  noArgs: '&d&lBosterChat &8&l| &fType &d/bosterchat help &ffor help!'
+  reload: '&d&lBosterChat &8&l| &fThe plugin has been reloaded!'
+  invalidSyntax: '&d&lBosterChat &8&l| &fWrong syntax&7: &c%syntax%'
+  help:
+  - '&f'
+  - '&f &dBosterChat &7> &6Help'
+  - '&f Reload the plugin &7- &d/bosterchat reload'
+  - '&f'
+
+
+      
