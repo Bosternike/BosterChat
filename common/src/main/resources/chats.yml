@@ -191,6 +191,10 @@ global-example:
     1:
       component1:
         text: '&6&lG &8&l|&f '
+        hover: 'Click here type a message to global chat'
+        action:
+          type: SUGGEST_COMMAND
+          string: '!'
       component2:
         text: '%prefix%'
         hover: '&fClick here to open our store'
@@ -230,6 +234,10 @@ admin-example:
     1:
       component1:
         text: '&c&lA &8&l|&f '
+        hover: 'Click here type a message to admin chat'
+        action:
+          type: SUGGEST_COMMAND
+          string: '@'
       component2:
         text: '%prefix%'
       component3:
