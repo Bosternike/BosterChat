@@ -25,4 +25,6 @@ public interface PlayerSender extends CommandSender {
     @NotNull Cooldowns getCooldowns();
 
     void sendToChat(@NotNull Chat chat, @NotNull String message);
+
+    @NotNull String getRank();
 }

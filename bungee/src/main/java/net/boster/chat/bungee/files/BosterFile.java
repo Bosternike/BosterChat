@@ -24,6 +24,8 @@ public class BosterFile {
     @Getter private File file;
     @Getter private Configuration configuration;
 
+    private boolean loadFrom, loadYaml;
+
     public BosterFile(@NotNull String file) {
         hash.put(file, this);
         this.name = file;
@@ -42,14 +44,13 @@ public class BosterFile {
     }
 
     public void reload() {
-        try {
-            configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadFile(loadFrom, loadYaml);
     }
 
     public void loadFile(boolean loadFrom, boolean loadYaml) {
+        this.loadFrom = loadFrom;
+        this.loadYaml = loadYaml;
+
         file = new File(BosterChatBungee.getInstance().getDataFolder() + directory, name + expansion);
         if (!file.exists()) {
             file.getParentFile().mkdirs();

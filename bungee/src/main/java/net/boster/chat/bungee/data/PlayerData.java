@@ -108,6 +108,11 @@ public class PlayerData implements PlayerSender {
         }
     }
 
+    @Override
+    public @NotNull String getRank() {
+        return "";
+    }
+
     private boolean checkPlayer(ProxiedPlayer p, Chat c) {
         if(c.getChatSettings().getSeeMessagesPermission() == null) return true;
 
@@ -118,12 +123,12 @@ public class PlayerData implements PlayerSender {
         TextComponent[] tc = new TextComponent[row.getComponents().size()];
         for(int i = 0; i < row.getComponents().size(); i++) {
             ChatComponent cc = row.getComponents().get(i);
-            tc[i] = new TextComponent(toPlaceholders(cc.getText(), message));
+            tc[i] = new TextComponent(toPlaceholders(cc.getText(), message, chat));
             if(cc.getHover() != null) {
-                tc[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(toPlaceholders(cc.getHover(), message))));
+                tc[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(toPlaceholders(cc.getHover(), message, chat))));
             }
             if(cc.getActionType() != null && cc.getActionString() != null) {
-                tc[i].setClickEvent(new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message)));
+                tc[i].setClickEvent(new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat)));
             }
         }
         for(ProxiedPlayer p : players) {
@@ -134,8 +139,8 @@ public class PlayerData implements PlayerSender {
         }
     }
 
-    public String toPlaceholders(@NotNull String s, @NotNull String message) {
-        String r = ChatUtils.toColor(BosterChatBungee.getInstance().toPlaceholders(player, s));
+    public String toPlaceholders(@NotNull String s, @NotNull String message, @NotNull Chat chat) {
+        String r = ChatUtils.toColor(BosterChatBungee.getInstance().toPlaceholders(this, s, chat));
         r = r.replace("%message%", message).replace("%colored_message%", ChatUtils.toColor(message));
         return r;
     }
@@ -146,5 +151,9 @@ public class PlayerData implements PlayerSender {
 
     public static void clearAll() {
         hash.clear();
+    }
+
+    public static @NotNull Collection<PlayerData> players() {
+        return hash.values();
     }
 }

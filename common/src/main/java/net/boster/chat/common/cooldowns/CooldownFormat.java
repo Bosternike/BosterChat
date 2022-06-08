@@ -38,82 +38,24 @@ public class CooldownFormat {
     public static CooldownFormat fromSection(ConfigurationSection section) {
         if(section == null) return CooldownUtils.defaultFormat;
 
-        String second;
-        String some_seconds;
-        String seconds;
-        String minute;
-        String some_minutes;
-        String minutes;
-        String hour;
-        String some_hours;
-        String hours;
-        String day;
-        String some_days;
-        String days;
-        //Seconds
-        if(section.getString("second") != null) {
-            second = section.getString("second");
-        } else {
-            second = CooldownUtils.defaultFormat.second;
-        }
-        if(section.getString("some_seconds") != null) {
-            some_seconds = section.getString("some_seconds");
-        } else {
-            some_seconds = CooldownUtils.defaultFormat.some_seconds;
-        }
-        if(section.getString("seconds") != null) {
-            seconds = section.getString("seconds");
-        } else {
-            seconds = CooldownUtils.defaultFormat.seconds;
-        }
-        //Minutes
-        if(section.getString("minute") != null) {
-            minute = section.getString("minute");
-        } else {
-            minute = CooldownUtils.defaultFormat.minute;
-        }
-        if(section.getString("some_minutes") != null) {
-            some_minutes = section.getString("some_minutes");
-        } else {
-            some_minutes = CooldownUtils.defaultFormat.some_minutes;
-        }
-        if(section.getString("minutes") != null) {
-            minutes = section.getString("minutes");
-        } else {
-            minutes = CooldownUtils.defaultFormat.minutes;
-        }
-        //Hours
-        if(section.getString("hour") != null) {
-            hour = section.getString("hour");
-        } else {
-            hour = CooldownUtils.defaultFormat.hour;
-        }
-        if(section.getString("some_hours") != null) {
-            some_hours = section.getString("some_hours");
-        } else {
-            some_hours = CooldownUtils.defaultFormat.some_hours;
-        }
-        if(section.getString("hours") != null) {
-            hours = section.getString("hours");
-        } else {
-            hours = CooldownUtils.defaultFormat.hours;
-        }
-        //Days
-        if(section.getString("day") != null) {
-            day = section.getString("day");
-        } else {
-            day = CooldownUtils.defaultFormat.day;
-        }
-        if(section.getString("some_days") != null) {
-            some_days = section.getString("some_days");
-        } else {
-            some_days = CooldownUtils.defaultFormat.some_days;
-        }
-        if(section.getString("days") != null) {
-            days = section.getString("days");
-        } else {
-            days = CooldownUtils.defaultFormat.days;
-        }
+        String second = section.getString("second", CooldownUtils.defaultFormat.second);
+        String some_seconds = section.getString("some_seconds", CooldownUtils.defaultFormat.some_seconds);
+        String seconds = section.getString("seconds", CooldownUtils.defaultFormat.seconds);
+        String minute = section.getString("minute", CooldownUtils.defaultFormat.minute);
+        String some_minutes = section.getString("some_minutes", CooldownUtils.defaultFormat.some_minutes);
+        String minutes = section.getString("minutes", CooldownUtils.defaultFormat.minutes);
+        String hour = section.getString("hour", CooldownUtils.defaultFormat.hour);
+        String some_hours = section.getString("some_hours", CooldownUtils.defaultFormat.some_hours);
+        String hours = section.getString("hours", CooldownUtils.defaultFormat.hours);
+        String day = section.getString("day", CooldownUtils.defaultFormat.day);
+        String some_days = section.getString("some_days", CooldownUtils.defaultFormat.some_days);
+        String days = section.getString("days", CooldownUtils.defaultFormat.days);
+
         return new CooldownFormat(second, some_seconds, seconds, minute, some_minutes, minutes, hour, some_hours, hours, day, some_days, days);
+    }
+
+    public static CooldownFormat empty() {
+        return new CooldownFormat("second", "seconds", "seconds", "minute", "minutes", "minutes",
+                "hour", "hours", "hours", "day", "days", "days");
     }
 }

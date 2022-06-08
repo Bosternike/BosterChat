@@ -14,10 +14,7 @@ public class BosterChatCommand extends ChatCommandWrapper {
 
     @Override
     public void execute(@NotNull CommandSender sender, @NotNull String[] args) {
-        if(!sender.hasPermission("boster.chat.command")) {
-            sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.noPermission")));
-            return;
-        }
+        if(!checkPermission(sender, "boster.chat.command")) return;
 
         if(args.length == 0) {
             sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.noArgs")));
@@ -25,9 +22,13 @@ public class BosterChatCommand extends ChatCommandWrapper {
         }
 
         if(args[0].equalsIgnoreCase("reload")) {
+            if(!checkPermission(sender, "boster.chat.command.reload")) return;
+
             BosterChat.reload();
             sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.reload")));
         } else if(args[0].equalsIgnoreCase("help")) {
+            if(!checkPermission(sender, "boster.chat.command.help")) return;
+
             plugin.config().getStringList("Messages.help").forEach(s -> sender.sendMessage(ChatUtils.toColor(s)));
         } else {
             String syntax = "";
@@ -37,6 +38,15 @@ public class BosterChatCommand extends ChatCommandWrapper {
                 a = " ";
             }
             sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.invalidSyntax").replace("%syntax%", syntax)));
+        }
+    }
+
+    private boolean checkPermission(CommandSender sender, String s) {
+        if(!sender.hasPermission(s)) {
+            sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.noPermission")));
+            return false;
+        } else {
+            return true;
         }
     }
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CooldownUtils {
 
-	public static CooldownFormat defaultFormat;
+	public static CooldownFormat defaultFormat = CooldownFormat.empty();
 	public static CooldownMessages cooldownMessages;
 
 	public static void load(@NotNull ConfigurationSection format, @NotNull ConfigurationSection messages) {
@@ -36,13 +36,16 @@ public class CooldownUtils {
 		sendCooldown(p, lg, time, messages.getMessage(), messages.getTitle(), messages.getSubTitle(), messages.getActionbar(), format);
 	}
 
+	public static long toSecondsLeft(long lg, int time) {
+		return ((lg / 1000) + time) - (System.currentTimeMillis() / 1000);
+	}
+
 	public static String getLeft(long lg, int time) {
 		return getLeft(lg, time, defaultFormat);
 	}
 
-	public static String getLeft(long lg, int time, @NotNull CooldownFormat cdFormat) {
+	public static String getLeft(long secondsleft, int time, @NotNull CooldownFormat cdFormat) {
 		String s = "";
-		long secondsleft = ((lg / 1000) + time) - (System.currentTimeMillis() / 1000);
 		if (secondsleft > 0) {
 			boolean ds = false;
 			if (TimeUnit.SECONDS.toDays(secondsleft) > 0) {

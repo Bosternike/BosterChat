@@ -51,6 +51,16 @@ public class VaultSupport {
 		return "";
 	}
 
+	public static String getRank(Player p) {
+		if(!isLoaded) return "";
+
+		if(chat != null) {
+			return chat.getPrimaryGroup(p);
+		}
+
+		return "";
+	}
+
 	public static String getSuffix(Player p) {
 		if(!isLoaded) return "";
 

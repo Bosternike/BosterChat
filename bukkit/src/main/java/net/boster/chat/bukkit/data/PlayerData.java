@@ -3,6 +3,7 @@ package net.boster.chat.bukkit.data;
 import lombok.Getter;
 import lombok.Setter;
 import net.boster.chat.bukkit.BosterChatBukkit;
+import net.boster.chat.bukkit.lib.VaultSupport;
 import net.boster.chat.bukkit.utils.VersionManager;
 import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.chat.ChatRow;
@@ -108,6 +109,11 @@ public class PlayerData implements PlayerSender {
         }
     }
 
+    @Override
+    public @NotNull String getRank() {
+        return VaultSupport.getRank(player);
+    }
+
     private boolean checkPlayer(Player p, Chat c) {
         if(c.getChatSettings().getSeeMessagesPermission() == null) return true;
 
@@ -118,12 +124,12 @@ public class PlayerData implements PlayerSender {
         TextComponent[] tc = new TextComponent[row.getComponents().size()];
         for(int i = 0; i < row.getComponents().size(); i++) {
             ChatComponent cc = row.getComponents().get(i);
-            tc[i] = new TextComponent(toPlaceholders(cc.getText(), message));
+            tc[i] = new TextComponent(toPlaceholders(cc.getText(), message, chat));
             if(cc.getHover() != null) {
-                tc[i].setHoverEvent(VersionManager.buildHover(toPlaceholders(cc.getHover(), message)));
+                tc[i].setHoverEvent(VersionManager.buildHover(toPlaceholders(cc.getHover(), message, chat)));
             }
             if(cc.getActionType() != null && cc.getActionString() != null) {
-                tc[i].setClickEvent(new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message)));
+                tc[i].setClickEvent(new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat)));
             }
         }
         for(Player p : players) {
@@ -138,8 +144,8 @@ public class PlayerData implements PlayerSender {
         }
     }
 
-    public String toPlaceholders(@NotNull String s, @NotNull String message) {
-        String r = ChatUtils.toColor(BosterChatBukkit.getInstance().toPlaceholders(player, s));
+    public String toPlaceholders(@NotNull String s, @NotNull String message, @NotNull Chat chat) {
+        String r = ChatUtils.toColor(BosterChatBukkit.getInstance().toPlaceholders(this, s, chat));
         r = r.replace("%message%", message).replace("%colored_message%", ChatUtils.toColor(message));
         return r;
     }
@@ -150,5 +156,9 @@ public class PlayerData implements PlayerSender {
 
     public static void clearAll() {
         hash.clear();
+    }
+
+    public static @NotNull Collection<PlayerData> players() {
+        return hash.values();
     }
 }

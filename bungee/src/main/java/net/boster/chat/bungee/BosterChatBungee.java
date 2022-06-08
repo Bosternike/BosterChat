@@ -8,6 +8,7 @@ import net.boster.chat.bungee.files.BosterFile;
 import net.boster.chat.bungee.lib.LibsProvider;
 import net.boster.chat.bungee.listeners.PlayerListener;
 import net.boster.chat.common.BosterChatPlugin;
+import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.chat.implementation.ChatPlaceholdersImpl;
 import net.boster.chat.common.chat.implementation.SettingsImpl;
 import net.boster.chat.common.chat.placeholders.ChatPlaceholders;
@@ -20,6 +21,7 @@ import net.boster.chat.common.provider.PlaceholderProvider;
 import net.boster.chat.common.placeholders.PlaceholdersManager;
 import net.boster.chat.common.provider.BosterChatProvider;
 import net.boster.chat.common.sender.CommandSender;
+import net.boster.chat.common.sender.PlayerSender;
 import net.boster.chat.common.utils.ChatUtils;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -33,6 +35,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Collection;
+import java.util.UUID;
 
 public class BosterChatBungee extends Plugin implements BosterChatPlugin {
 
@@ -140,7 +144,32 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
         return new BungeeConfig(ConfigurationProvider.getProvider(YamlConfiguration.class).load(reader));
     }
 
-    public @NotNull String toPlaceholders(@NotNull ProxiedPlayer p, @NotNull String message) {
+    @Override
+    public @NotNull Collection<? extends PlayerSender> getPlayers() {
+        return PlayerData.players();
+    }
+
+    @Override
+    public PlayerSender getPlayer(@NotNull String name) {
+        ProxiedPlayer p = getProxy().getPlayer(name);
+        return p != null ? PlayerData.get(p) : null;
+    }
+
+    @Override
+    public PlayerSender getPlayer(@NotNull UUID id) {
+        ProxiedPlayer p = getProxy().getPlayer(id);
+        return p != null ? PlayerData.get(p) : null;
+    }
+
+    @Override
+    public <T> PlayerSender toSender(@NotNull T t) {
+        if(!(t instanceof ProxiedPlayer)) return null;
+
+        return PlayerData.get((ProxiedPlayer) t);
+    }
+
+    public @NotNull String toPlaceholders(@NotNull PlayerData sender, @NotNull String message, @NotNull Chat chat) {
+        ProxiedPlayer p = sender.getPlayer();
         String r = message.replace("%display_name%", p.getDisplayName())
                 .replace("%name%", p.getName());
 

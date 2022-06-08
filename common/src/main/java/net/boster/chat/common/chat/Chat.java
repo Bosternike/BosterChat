@@ -25,6 +25,8 @@ public class Chat {
     @Getter @Setter @Nullable private Cooldown cooldown;
 
     @Getter @Setter @NotNull private List<ChatRow> rows = new ArrayList<>();
+    @Getter @Setter @NotNull private Map<String, String> rankColorMap = new HashMap<>();
+    @Getter @Setter @NotNull private Map<String, String> replacesMap = new HashMap<>();
 
     public Chat(@NotNull String name) {
         this.name = name;
@@ -55,6 +57,20 @@ public class Chat {
         ConfigurationSection cd = section.getSection("Cooldown");
         if(cd != null) {
             this.cooldown = new Cooldown(cd);
+        }
+
+        ConfigurationSection cr = section.getSection("Replaces");
+        if(cr != null) {
+            for(String crs : cr.getKeys()) {
+                replacesMap.put(crs, cr.getString(crs));
+            }
+        }
+
+        ConfigurationSection rc = section.getSection("RankColors");
+        if(rc != null) {
+            for(String rs : rc.getKeys()) {
+                rankColorMap.put(rs, rc.getString(rs));
+            }
         }
     }
 
@@ -122,6 +138,10 @@ public class Chat {
 
     public @NotNull String toFormat(@NotNull PlayerSender sender, @NotNull String message) {
         String r = message;
+        for(Map.Entry<String, String> e : replacesMap.entrySet()) {
+            r = r.replace(e.getKey(), e.getValue());
+        }
+
         if(settings.getMessageCapitalize() != null) {
             r = settings.getMessageCapitalize().checkMessage(sender, r);
         }

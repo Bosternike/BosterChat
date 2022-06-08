@@ -13,6 +13,7 @@ import net.boster.chat.bukkit.lib.VaultSupport;
 import net.boster.chat.bukkit.listeners.PlayerListener;
 import net.boster.chat.bukkit.utils.VersionManager;
 import net.boster.chat.common.BosterChatPlugin;
+import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.chat.implementation.ChatPlaceholdersImpl;
 import net.boster.chat.common.chat.implementation.SettingsImpl;
 import net.boster.chat.common.chat.placeholders.ChatPlaceholders;
@@ -25,6 +26,7 @@ import net.boster.chat.common.provider.PlaceholderProvider;
 import net.boster.chat.common.placeholders.PlaceholdersManager;
 import net.boster.chat.common.provider.BosterChatProvider;
 import net.boster.chat.common.sender.CommandSender;
+import net.boster.chat.common.sender.PlayerSender;
 import net.boster.chat.common.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.Reader;
+import java.util.Collection;
+import java.util.UUID;
 
 public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
 
@@ -62,7 +66,6 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
         VaultSupport.load();
         PAPISupport.load();
 
-        saveDefaultConfig();
         chatsF.loadFile(true, true);
         configF.loadFile(true, true);
 
@@ -139,7 +142,32 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
         return new BukkitConfig(YamlConfiguration.loadConfiguration(reader));
     }
 
-    public @NotNull String toPlaceholders(@NotNull Player p, @NotNull String message) {
+    @Override
+    public @NotNull Collection<? extends PlayerSender> getPlayers() {
+        return PlayerData.players();
+    }
+
+    @Override
+    public PlayerSender getPlayer(@NotNull String name) {
+        Player p = Bukkit.getPlayer(name);
+        return p != null ? PlayerData.get(p) : null;
+    }
+
+    @Override
+    public PlayerSender getPlayer(@NotNull UUID id) {
+        Player p = Bukkit.getPlayer(id);
+        return p != null ? PlayerData.get(p) : null;
+    }
+
+    @Override
+    public <T> PlayerSender toSender(@NotNull T t) {
+        if(!(t instanceof Player)) return null;
+
+        return PlayerData.get((Player) t);
+    }
+
+    public @NotNull String toPlaceholders(@NotNull PlayerData sender, @NotNull String message, @NotNull Chat chat) {
+        Player p = sender.getPlayer();
         String r = message.replace("%display_name%", p.getDisplayName())
                 .replace("%name%", p.getName()).replace("%balance%", Double.toString(VaultSupport.getBalance(p)))
                 .replace("%world%", p.getWorld().getName()).replace("%health%", Double.toString(p.getHealth()))
@@ -161,6 +189,12 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
         for(PlaceholderProvider<Player> pp : PlaceholdersManager.requestPlaceholders(Player.class)) {
             r = pp.getFunction().apply(p);
         }
+
+        String rc = chat.getRankColorMap().get(sender.getRank());
+        if(rc == null) {
+            rc = chat.getRankColorMap().getOrDefault("default", "");
+        }
+        r = r.replace("%rank_color%", rc);
 
         r = PAPISupport.setPlaceholders(p, r);
 

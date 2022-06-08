@@ -1,5 +1,6 @@
 package net.boster.chat.common;
 
+import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.placeholders.PlaceholdersManager;
 import net.boster.chat.common.provider.BosterChatProvider;
 import net.boster.chat.common.provider.PlaceholderProvider;
@@ -28,5 +29,9 @@ public class BosterChat {
 
     public static <T> void registerPlaceholders(@NotNull Class<T> clazz, @NotNull Function<T, @NotNull String> function) {
         PlaceholdersManager.addProvider(clazz, function);
+    }
+
+    public static Chat getChat(@NotNull String s) {
+        return Chat.get(s);
     }
 }
