@@ -5,6 +5,8 @@ import net.boster.chat.common.BosterChatPlugin;
 import net.boster.chat.common.config.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public abstract class ChatCommandWrapper implements ChatCommand {
 
     @Getter @NotNull protected final String name;
@@ -17,14 +19,9 @@ public abstract class ChatCommandWrapper implements ChatCommand {
         this.aliases = aliases;
     }
 
-    public ChatCommandWrapper(@NotNull BosterChatPlugin plugin, @NotNull ConfigurationSection section) throws NullPointerException {
+    public ChatCommandWrapper(@NotNull BosterChatPlugin plugin, @NotNull ConfigurationSection section) {
         this.plugin = plugin;
-
-        if(section.getString("name") == null) {
-            throw new NullPointerException("Command name can not be null!");
-        }
-
-        this.name = section.getString("name");
+        this.name = Objects.requireNonNull(section.getString("name"));
         this.aliases = section.getStringList("aliases").toArray(new String[]{});
     }
 }

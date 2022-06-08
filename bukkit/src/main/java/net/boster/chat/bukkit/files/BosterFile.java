@@ -22,7 +22,8 @@ public class BosterFile {
     @Getter private File file;
     @Getter private FileConfiguration configuration;
 
-    private boolean loadFrom, loadYaml;
+    private boolean loadFrom;
+    private boolean loadYaml;
 
     public BosterFile(@NotNull String file) {
         hash.put(file, this);
