@@ -59,7 +59,7 @@ dependencies {
 ## Contact
 
 <li>LinkedIn: <a href="https://www.linkedin.com/in/andrew-vlasov-9a37a21bb/">Andrew</a></li>
-<li>Project Link: <a href=https://github.com/Bosternike/BosterItemSpawner>source code</a></li>
+<li>Project Link: <a href=https://github.com/Bosternike/BosterChat>source code</a></li>
 
 [contributors-shield]: https://img.shields.io/github/contributors/Bosternike/BosterChat.svg?style=for-the-badge
 [contributors-url]: https://github.com/Bosternike/BosterChat/graphs/contributors
