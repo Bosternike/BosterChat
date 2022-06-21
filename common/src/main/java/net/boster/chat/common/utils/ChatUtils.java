@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class ChatUtils {
 
@@ -25,8 +24,6 @@ public class ChatUtils {
 
     public static final Character[] ALL_CODES = new Character[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f', 'k', 'l', 'm', 'n', 'o'};
-
-    private static final Pattern gradient = Pattern.compile("<GRADIENT:([0-9A-Fa-f]{6})>(.*?)</GRADIENT:([0-9A-Fa-f]{6})>");
 
     private static final List<String> SPECIAL_COLORS = ImmutableList.of("&l", "&n", "&o", "&k", "&m", "§l", "§n", "§o", "§k", "§m");
     private static final Map<Color, ChatColor> colors = ImmutableMap.<Color, ChatColor>builder()

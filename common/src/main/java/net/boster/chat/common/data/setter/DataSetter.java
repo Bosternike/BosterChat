@@ -17,7 +17,7 @@ public interface DataSetter {
 
     void deleteUser(@NotNull String uuid);
 
+    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     default void onDisable() {
-
     }
 }

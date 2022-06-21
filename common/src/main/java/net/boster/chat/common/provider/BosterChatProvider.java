@@ -25,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 
 public class BosterChatProvider {
 

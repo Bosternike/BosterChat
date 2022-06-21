@@ -26,8 +26,8 @@ public class TextUtils {
         return sbSource.toString();
     }
 
-    public static String stripMessage(@NotNull String s) {
-        s = ChatUtils.stripColors(s.toLowerCase());
+    public static String stripMessage(@NotNull String o) {
+        String s = ChatUtils.stripColors(o.toLowerCase());
 
         s = s.replaceAll("[^a-zA-Z0-9\\s]", "");
 
@@ -100,15 +100,16 @@ public class TextUtils {
     }
 
     public static @NotNull String insertDot(@NotNull String s) {
+        String r = s;
         String lastChar = s.substring(s.length() - 1);
         String[] words = s.split("\\s");
         String lastWord = words[words.length - 1];
 
         if(!isDomain(lastWord) && lastChar.matches("(?i)[a-z]")) {
-            s += ".";
+            r += ".";
         }
 
-        return s;
+        return r;
     }
 
     public static boolean isDomain(@NotNull String s) {

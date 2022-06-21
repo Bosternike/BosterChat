@@ -17,7 +17,8 @@ public class SimplePatternReader implements PatternReader {
         return read(s, null);
     }
 
-    private MessagePattern read(String s, String initial) {
+    private MessagePattern read(String s, String o) {
+        String initial = o;
         if(initial == null) {
             initial = s;
         }

@@ -1,7 +1,6 @@
 package net.boster.chat.common.chat.pattern.patterns;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import net.boster.chat.common.chat.pattern.MessagePattern;
 import net.boster.chat.common.utils.ChatUtils;
 import org.jetbrains.annotations.NotNull;

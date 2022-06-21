@@ -11,11 +11,12 @@ public class ColorPattern implements MessagePattern {
     @Getter @NotNull private final String color;
 
     public ColorPattern(@NotNull String color) {
-        if(!color.startsWith("§") && !color.startsWith("&")) {
-            color = "&" + color;
+        String s = color;
+        if(!s.startsWith("§") && !s.startsWith("&")) {
+            s = "&" + s;
         }
 
-        this.color = ChatUtils.toColor(color);
+        this.color = ChatUtils.toColor(s);
     }
 
     public ColorPattern(@NotNull ChatColor color) {
