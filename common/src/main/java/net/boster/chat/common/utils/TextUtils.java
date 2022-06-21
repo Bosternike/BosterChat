@@ -27,13 +27,15 @@ public class TextUtils {
     }
 
     public static String stripMessage(@NotNull String s) {
+        s = ChatUtils.stripColors(s.toLowerCase());
+
         s = s.replaceAll("[^a-zA-Z0-9\\s]", "");
 
         s = s.replaceAll("(.)(?=\\1\\1+)", "");
         s = s.replaceAll("(..)(?=\\1\\1+)", "");
         s = s.replaceAll("(...)(?=\\1\\1+)", "");
 
-        return ChatUtils.stripColors(s.toLowerCase());
+        return s;
     }
 
     public static int similarity(@NotNull String s1, @NotNull String s2) {
@@ -63,12 +65,13 @@ public class TextUtils {
         for (int i = 0; i <= s1.length(); i++) {
             int lastValue = i;
             for (int j = 0; j <= s2.length(); j++)
-                if (i == 0)
+                if (i == 0) {
                     costs[j] = j;
-                else if (j > 0) {
+                } else if (j > 0) {
                     int newValue = costs[j - 1];
-                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                    if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
                         newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                    }
                     costs[j - 1] = lastValue;
                     lastValue = newValue;
                 }
@@ -76,6 +79,7 @@ public class TextUtils {
                 costs[s2.length()] = lastValue;
             }
         }
+
         return costs[s2.length()];
     }
 
@@ -101,7 +105,7 @@ public class TextUtils {
         String lastWord = words[words.length - 1];
 
         if(!isDomain(lastWord) && lastChar.matches("(?i)[a-z]")) {
-            s = s + ".";
+            s += ".";
         }
 
         return s;

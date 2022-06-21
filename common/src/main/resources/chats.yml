@@ -34,7 +34,9 @@
 default-example:
   # ALL FOLLOWING FEATURES ARE APPLICABLE FOR ANY CHATS!
   # YOU CAN ALSO CREATE ANY CHAT AND NAME IT AS YOU WANT!
-  #
+  Log:
+    Enabled: true
+    Format: '[%date%] [%chat%] %player%: %message%'
   # If this feature is enabled, when player sends a message it will be also sent to console.
   # Set to "false" or remove this to disable.
   LogToConsole: true
@@ -192,6 +194,9 @@ default-example:
     VIP: '&a'
 
 global-example:
+  Log:
+    Enabled: true
+    Format: '[%date%] [%chat%] %player%: %message%'
   LogToConsole: true
   symbol: '!'
   # It will follow settings from config file.

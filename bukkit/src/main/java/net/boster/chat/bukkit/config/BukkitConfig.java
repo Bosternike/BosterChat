@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -47,6 +48,11 @@ public class BukkitConfig implements net.boster.chat.common.config.Configuration
     @Override
     public Object get(@NotNull String path) {
         return initial.get(path);
+    }
+
+    @Override
+    public Map<String, Object> entries() {
+        return initial.getValues(false);
     }
 
     @Override

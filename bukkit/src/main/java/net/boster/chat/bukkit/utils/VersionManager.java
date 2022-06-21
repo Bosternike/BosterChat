@@ -15,11 +15,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class VersionManager {
 
-    private static TitleSender titleSender;
-    private static ActionBarSender actionBarSender;
-    private static HoverBuilder hoverBuilder;
+    private static final TitleSender titleSender;
+    private static final ActionBarSender actionBarSender;
+    private static final HoverBuilder hoverBuilder;
 
-    public static void load() {
+    static {
         Version v = Version.getCurrentVersion();
         if (v.getVersionInteger() < 3) {
             titleSender = new OldTitleSender();

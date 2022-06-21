@@ -7,11 +7,78 @@
 # /bosterchat - boster.chat.command
 # /bosterchat reload - boster.chat.command.reload
 # /bosterchat help - boster.chat.command.help
+#
+# /chatcolor - boster.chat.chatcolor
+# /chatcolor (unlimited chatcolors) - boster.chat.chatcolor.unlimited
+# /chatcolor [color] [player] - boster.chat.chatcolor.others
+
+# Storages:
+# - YAML
+# - SQLITE
+# - MYSQL
+Storage: YAML
+
+MySql:
+  host: 'localhost'
+  port: 3306
+  user: ''
+  password: ''
+  database: ''
 
 Placeholders:
   NoClan: ''
   NoTown: ''
   NoNation: ''
+
+Prefix: '&d&lBosterChat &8&l|'
+
+# Command - /chatcolor
+# Command usage - /chatcolor [color]
+# Example usage - /chatcolor &6
+# Another example usage - /chatcolor smart:a;b;c
+ChatColor:
+  Enabled: true
+  name: 'chatcolor'
+  aliases:
+  - 'cc'
+  # Argument to disable own chat color.
+  # Example command usage - /chatcolor off
+  DisableArgument: 'off'
+  Patterns:
+    # Command usage /chatcolor rgb
+    rgb: 'rgb:255,255,0;255,0,255' # Returns rgb message.
+    # Command usage /chatcolor triple
+    triple: 'smart:a,b,c'
+    # Command usage /chatcolor example
+    example: 'smart:a,b,c,d,6'
+    # Command usage /chatcolor half
+    half: 'a|6'
+    # Command usage /chatcolor half-rgb
+    half-rgb: 'rgb|smart:a,b,c'
+    # Command usage /chatcolor random
+    random: 'random:0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,k,l,m,n,o'
+    # Command usage /chatcolor randomChar
+    randomChar: 'randomChar:0§l,1§l,2§l,3§l,4§l,5§l,6§l,7§l,8§l,9§l,a§l,b§l,c§l,d§l,e§l,f§l,k§l,l§l,m§l,n§l,o§l'
+  # Permission: boster.chat.chatcolor.<permission>
+  limitedPermissions:
+    # Permission: boster.chat.chatcolor.example
+    example:
+      # For all color codes use: ALL
+      # List of color codes: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, k, l, m, n, o
+      ColorCodes: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+      Patterns:
+      - 'rgb'
+      - 'triple'
+      - 'example'
+      - 'half'
+      - 'half-rgb'
+      - 'random'
+      - 'randomChar'
+      # Here can be patterns, color codes, etc.
+      # Example command usage - /chatcolor smart:a;b;c
+      Others:
+      - 'smart:a;b;c'
+
 
 Settings:
   # All following settings can be configured in chat settings.
@@ -104,15 +171,28 @@ CooldownMessage:
     text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
 
 Messages:
-  noPermission: "&d&lBosterChat &8&l| &cYou don't have permission for this command!"
-  noArgs: '&d&lBosterChat &8&l| &fType &d/bosterchat help &ffor help!'
-  reload: '&d&lBosterChat &8&l| &fThe plugin has been reloaded!'
-  invalidSyntax: '&d&lBosterChat &8&l| &fWrong syntax&7: &c%syntax%'
+  noPermission: "%prefix% &cYou don't have permission for this command!"
+  noArgs: '%prefix% &fType &d/bosterchat help &ffor help!'
+  reload: '%prefix% &fThe plugin has been reloaded!'
+  invalidSyntax: '%prefix% &fWrong syntax&7: &c%syntax%'
+  nullPlayer: '%prefix% &fPlayer &c%arg%&f could not be found.'
   help:
   - '&f'
   - '&f &dBosterChat &7> &6Help'
   - '&f Reload the plugin &7- &d/bosterchat reload'
+  - ''
+  - '&f Set own chat color - /chatcolor [color]'
+  - '&f Set chat color for other player - /chatcolor [color] [player]'
   - '&f'
+  chatColor:
+    usage: '%prefix% &fUsage &7- /chatcolor [color]'
+    limit: "%prefix% &cYou don't have permission for unlimited chat colors."
+    noPermissionOthers: "%prefix% &cYou don't have permission to change chat color for other players."
+    set-self: '%prefix% &fYour chat color has been set to %color%&f!'
+    set-others: "%prefix% &a%player%&f's chat color has been set to %color%&f!"
+    off-self: '%prefix% &fYour chat color has been removed!'
+    off-others: "%prefix% &a%player%&f's chat color has been removed!"
+
 
 
       

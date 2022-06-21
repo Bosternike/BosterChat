@@ -44,6 +44,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDisconnect(PlayerDisconnectEvent e) {
-        PlayerData.get(e.getPlayer()).clear();
+        PlayerData d = PlayerData.get(e.getPlayer());
+        d.saveData();
+        d.clear();
     }
 }

@@ -2,6 +2,7 @@ package net.boster.chat.common.utils;
 
 import net.boster.chat.common.config.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -72,5 +73,9 @@ public class ConfigUtils {
 
         out.close();
         in.close();
+    }
+
+    public static String configToString(@NotNull ConfigurationSection section) {
+        return new Yaml().dump(section.entries());
     }
 }

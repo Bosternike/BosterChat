@@ -12,6 +12,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatSettings {
 
+    /**
+     * Set to null to disable log.
+     * Variables: %date%, %player%%, %message%, %chat%
+     */
+    @Getter @Setter @Nullable private String logFormat;
     @Getter @Setter private boolean logToConsole;
     @Getter @Setter @Nullable private String symbol;
     @Getter @Setter private double showDistance = -1;
@@ -21,6 +26,9 @@ public class ChatSettings {
     @Getter @Setter @Nullable private Permission permission;
 
     public ChatSettings(@NotNull ConfigurationSection section) {
+        if(section.getBoolean("Log.Enabled", false)) {
+            this.logFormat = section.getString("Log.Format");
+        }
         this.logToConsole = section.getBoolean("LogToConsole", false);
         this.symbol = section.getString("symbol");
         this.showDistance = section.getDouble("showDistance", -1);

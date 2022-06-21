@@ -1,6 +1,5 @@
 package net.boster.chat.bukkit.lib.clan;
 
-import net.boster.chat.bukkit.lib.ClansSupport;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import org.bukkit.entity.Player;

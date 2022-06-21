@@ -5,10 +5,12 @@ import net.boster.chat.common.chat.settings.Settings;
 import net.boster.chat.common.commands.ChatCommand;
 import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.files.BosterChatFile;
+import net.boster.chat.common.log.ChatLog;
 import net.boster.chat.common.log.LogType;
 import net.boster.chat.common.sender.CommandSender;
 import net.boster.chat.common.sender.PlayerSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -36,9 +38,16 @@ public interface BosterChatPlugin {
     InputStream getResource(@NotNull String s);
     ConfigurationSection loadConfiguration(@NotNull File file);
     ConfigurationSection loadConfiguration(@NotNull Reader reader);
+    ConfigurationSection loadConfiguration(@NotNull String s);
+    ConfigurationSection emptyConfiguration();
+
+    BosterChatFile createFile(@NotNull String name, @Nullable String directory);
 
     @NotNull Collection<? extends PlayerSender> getPlayers();
     PlayerSender getPlayer(@NotNull String name);
     PlayerSender getPlayer(@NotNull UUID id);
     <T> PlayerSender toSender(@NotNull T t);
+
+    @NotNull ChatLog getChatLog();
+    void setChatLog(@NotNull ChatLog log);
 }

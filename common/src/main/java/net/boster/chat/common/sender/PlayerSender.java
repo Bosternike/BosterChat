@@ -1,9 +1,12 @@
 package net.boster.chat.common.sender;
 
 import net.boster.chat.common.chat.Chat;
+import net.boster.chat.common.chat.pattern.MessagePattern;
+import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.cooldowns.Cooldowns;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,4 +30,9 @@ public interface PlayerSender extends CommandSender {
     void sendToChat(@NotNull Chat chat, @NotNull String message);
 
     @NotNull String getRank();
+    @NotNull ConfigurationSection getData();
+    @Nullable MessagePattern getMessagePattern();
+    void setMessagePattern(@Nullable MessagePattern pattern);
+    void setData(@NotNull ConfigurationSection data);
+    void saveData();
 }

@@ -7,6 +7,6 @@ public class OldTitleSender implements TitleSender {
 
     @Override
     public void send(@NotNull Player p, @NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
-        p.sendTitle(title, subTitle);
+        //p.sendTitle(title, subTitle);
     }
 }

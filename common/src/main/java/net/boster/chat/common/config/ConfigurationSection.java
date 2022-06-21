@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface ConfigurationSection {
 
@@ -17,6 +18,7 @@ public interface ConfigurationSection {
     @NotNull Collection<String> getKeys();
 
     Object get(@NotNull String path);
+    Map<String, Object> entries();
 
     String getString(@NotNull String path);
     boolean getBoolean(@NotNull String path);

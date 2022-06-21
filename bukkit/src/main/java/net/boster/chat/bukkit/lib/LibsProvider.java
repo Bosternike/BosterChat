@@ -14,11 +14,9 @@ public class LibsProvider {
             townySupport = new TownySupport();
         } catch (ReflectiveOperationException ignored) {}
 
-        loadFactions();
-    }
-
-    private static void loadFactions() {
-
+        VaultSupport.load();
+        PAPISupport.load();
+        ClanSupport.load();
     }
 
     public static String getTownyTown(@NotNull Player p) {

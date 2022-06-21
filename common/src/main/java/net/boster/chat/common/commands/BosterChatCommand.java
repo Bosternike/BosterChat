@@ -14,39 +14,30 @@ public class BosterChatCommand extends ChatCommandWrapper {
 
     @Override
     public void execute(@NotNull CommandSender sender, @NotNull String[] args) {
-        if(!checkPermission(sender, "boster.chat.command")) return;
+        if (!checkPermission(sender, "boster.chat.command")) return;
 
-        if(args.length == 0) {
-            sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.noArgs")));
+        if (args.length == 0) {
+            sender.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.noArgs")));
             return;
         }
 
-        if(args[0].equalsIgnoreCase("reload")) {
-            if(!checkPermission(sender, "boster.chat.command.reload")) return;
+        if (args[0].equalsIgnoreCase("reload")) {
+            if (!checkPermission(sender, "boster.chat.command.reload")) return;
 
             BosterChat.reload();
-            sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.reload")));
-        } else if(args[0].equalsIgnoreCase("help")) {
-            if(!checkPermission(sender, "boster.chat.command.help")) return;
+            sender.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.reload")));
+        } else if (args[0].equalsIgnoreCase("help")) {
+            if (!checkPermission(sender, "boster.chat.command.help")) return;
 
-            plugin.config().getStringList("Messages.help").forEach(s -> sender.sendMessage(ChatUtils.toColor(s)));
+            plugin.config().getStringList("Messages.help").forEach(s -> sender.sendMessage(ChatUtils.toColorAndPrefix(s)));
         } else {
             String syntax = "";
             String a = "";
-            for(String s : args) {
+            for (String s : args) {
                 syntax += a + s;
                 a = " ";
             }
-            sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.invalidSyntax").replace("%syntax%", syntax)));
-        }
-    }
-
-    private boolean checkPermission(CommandSender sender, String s) {
-        if(!sender.hasPermission(s)) {
-            sender.sendMessage(ChatUtils.toColor(plugin.config().getString("Messages.noPermission")));
-            return false;
-        } else {
-            return true;
+            sender.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.invalidSyntax").replace("%syntax%", syntax)));
         }
     }
 }

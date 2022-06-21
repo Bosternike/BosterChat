@@ -3,21 +3,27 @@ package net.boster.chat.bungee.data;
 import lombok.Getter;
 import lombok.Setter;
 import net.boster.chat.bungee.BosterChatBungee;
+import net.boster.chat.common.BosterChat;
 import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.chat.ChatRow;
 import net.boster.chat.common.chat.component.ChatComponent;
+import net.boster.chat.common.chat.pattern.MessagePattern;
+import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.cooldowns.Cooldowns;
+import net.boster.chat.common.data.database.DatabaseRunnable;
 import net.boster.chat.common.sender.PlayerSender;
 import net.boster.chat.common.utils.ChatUtils;
 import net.md_5.bungee.BungeeTitle;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -30,11 +36,31 @@ public class PlayerData implements PlayerSender {
     @Getter private final ProxiedPlayer player;
     @Getter @NotNull private final Cooldowns cooldowns;
 
+    @Getter @Setter @NotNull private ConfigurationSection data;
+    @Getter @Setter @Nullable private MessagePattern messagePattern;
+
     public PlayerData(@NotNull ProxiedPlayer p) {
         this.player = p;
         this.cooldowns = new Cooldowns(p.getUniqueId());
+        this.data = BosterChat.get().emptyConfiguration();
+
+        loadData();
 
         hash.put(p, this);
+
+    }
+
+    private void loadData() {
+        new DatabaseRunnable().run(() -> {
+            data = BosterChat.getDataSetter().configuration(player.getUniqueId().toString());
+
+            String m = data.getString("ChatColor");
+            if(m != null) {
+                try {
+                    messagePattern = ChatUtils.getPatternReader().read(m);
+                } catch (Exception ignored) {}
+            }
+        });
     }
 
     public static @NotNull PlayerData get(@NotNull ProxiedPlayer p) {
@@ -113,6 +139,15 @@ public class PlayerData implements PlayerSender {
         return "";
     }
 
+    @Override
+    public void saveData() {
+        new DatabaseRunnable().run(() -> {
+            data.set("ChatColor", messagePattern != null ? messagePattern.getInitialPattern() : null);
+
+            BosterChat.getDataSetter().save(player.getUniqueId().toString(), data);
+        });
+    }
+
     private boolean checkPlayer(ProxiedPlayer p, Chat c) {
         if(c.getChatSettings().getSeeMessagesPermission() == null) return true;
 
@@ -120,20 +155,39 @@ public class PlayerData implements PlayerSender {
     }
 
     public void sendRow(@NotNull Chat chat, @NotNull ChatRow row, @NotNull String message, @NotNull Collection<? extends ProxiedPlayer> players) {
-        TextComponent[] tc = new TextComponent[row.getComponents().size()];
-        for(int i = 0; i < row.getComponents().size(); i++) {
-            ChatComponent cc = row.getComponents().get(i);
-            tc[i] = new TextComponent(toPlaceholders(cc.getText(), message, chat));
+        List<TextComponent> list = new ArrayList<>();
+
+        for(ChatComponent cc : row.getComponents()) {
+            String s = toPlaceholders(cc.getText(), message, chat);
+            BaseComponent[] tc = TextComponent.fromLegacyText(s);
+            HoverEvent hover = null;
             if(cc.getHover() != null) {
-                tc[i].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(toPlaceholders(cc.getHover(), message, chat))));
+                hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(toPlaceholders(cc.getHover(), message, chat)));
             }
+            ClickEvent click = null;
             if(cc.getActionType() != null && cc.getActionString() != null) {
-                tc[i].setClickEvent(new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat)));
+                click = new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat));
+            }
+
+            for(BaseComponent baseComponent : tc) {
+                if (hover != null) {
+                    baseComponent.setHoverEvent(hover);
+                }
+                if (click != null) {
+                    baseComponent.setClickEvent(click);
+                }
+            }
+
+            for(BaseComponent t : tc) {
+                list.add((TextComponent) t);
             }
         }
+
+        TextComponent[] tc = list.toArray(new TextComponent[]{});
         for(ProxiedPlayer p : players) {
             p.sendMessage(tc);
         }
+
         if(chat.getChatSettings().isLogToConsole()) {
             ProxyServer.getInstance().getConsole().sendMessage(tc);
         }

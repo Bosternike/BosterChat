@@ -11,7 +11,7 @@ public class PlaceholdersManager {
 
     private static final List<PlaceholderProvider<?>> placeholders = new ArrayList<>();
 
-    public static <T> void addProvider(@NotNull Class<T> clazz, @NotNull Function<T, @NotNull String> function) {
+    public static <T> void addProvider(@NotNull Class<T> clazz, @NotNull Function<PlaceholdersRequest<T>, @NotNull String> function) {
         addProvider(new PlaceholderProvider<>(clazz, function));
     }
 

@@ -1,6 +1,7 @@
 package net.boster.chat.bungee;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.boster.chat.bungee.config.BungeeConfig;
 import net.boster.chat.bungee.data.PlayerData;
 import net.boster.chat.bungee.files.BosterChatFileImpl;
@@ -16,7 +17,10 @@ import net.boster.chat.common.chat.settings.Settings;
 import net.boster.chat.common.commands.ChatCommand;
 import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.files.BosterChatFile;
+import net.boster.chat.common.log.ChatLog;
 import net.boster.chat.common.log.LogType;
+import net.boster.chat.common.placeholders.PlaceholdersRequest;
+import net.boster.chat.common.provider.ChatLogProvider;
 import net.boster.chat.common.provider.PlaceholderProvider;
 import net.boster.chat.common.placeholders.PlaceholdersManager;
 import net.boster.chat.common.provider.BosterChatProvider;
@@ -27,9 +31,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +51,9 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
     @Getter private BosterChatFile configFile;
     @Getter private BosterChatFile chatsFile;
 
+    @Getter @Setter
+    @NotNull private ChatLog chatLog;
+
     private Settings settings;
     private ChatPlaceholders chatPlaceholders;
 
@@ -54,10 +63,13 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
         instance = this;
         BosterChatProvider.setProvider(this);
 
+        chatLog = new ChatLogProvider(getDataFolder());
+
         BosterFile configF = new BosterFile("config");
         BosterFile chatsF = new BosterFile("chats");
 
         String PREFIX = "\u00a76+\u00a7a---------------- \u00a7dBosterChat \u00a7a------------------\u00a76+";
+        getProxy().getConsole().sendMessage(new TextComponent(PREFIX));
 
         LibsProvider.load();
 
@@ -74,7 +86,6 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
 
         getProxy().getPluginManager().registerListener(this, new PlayerListener());
 
-        getProxy().getConsole().sendMessage(new TextComponent(PREFIX));
         getProxy().getConsole().sendMessage(new TextComponent("\u00a7d[\u00a7bBosterChat\u00a7d] \u00a7fThe plugin has been \u00a7dEnabled\u00a7f!"));
         getProxy().getConsole().sendMessage(new TextComponent("\u00a7d[\u00a7bBosterChat\u00a7d] \u00a7fPlugin creator: \u00a7dBosternike"));
         getProxy().getConsole().sendMessage(new TextComponent("\u00a7d[\u00a7bBosterChat\u00a7d] \u00a7fPlugin version: \u00a7d" + getDescription().getVersion()));
@@ -82,6 +93,10 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
     }
 
     public void onDisable() {
+        for(PlayerData data : PlayerData.players()) {
+            data.saveData();
+        }
+        BosterChatProvider.disable();
         PlayerData.clearAll();
     }
 
@@ -145,6 +160,24 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
     }
 
     @Override
+    public ConfigurationSection loadConfiguration(@NotNull String s) {
+        return new BungeeConfig(ConfigurationProvider.getProvider(YamlConfiguration.class).load(s));
+    }
+
+    @Override
+    public ConfigurationSection emptyConfiguration() {
+        return new BungeeConfig(new Configuration());
+    }
+
+    @Override
+    public BosterChatFile createFile(@NotNull String name, @Nullable String directory) {
+        BosterFile f = new BosterFile(name);
+        f.setDirectory(directory != null ? directory : "");
+        f.loadFile(false, true);
+        return new BosterChatFileImpl(f);
+    }
+
+    @Override
     public @NotNull Collection<? extends PlayerSender> getPlayers() {
         return PlayerData.players();
     }
@@ -177,7 +210,7 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
         r = r.replace("%clan%", clan != null ? clan : chatPlaceholders.NO_CLAN());
 
         for(PlaceholderProvider<ProxiedPlayer> pp : PlaceholdersManager.requestPlaceholders(ProxiedPlayer.class)) {
-            r = pp.getFunction().apply(p);
+            r = pp.getFunction().apply(new PlaceholdersRequest<>(p, sender, chat, r));
         }
 
         return r;

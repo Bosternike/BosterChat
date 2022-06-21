@@ -17,7 +17,7 @@ import java.util.*;
 public class Chat {
 
     private static final Map<String, Chat> map = new HashMap<>();
-    private static List<Chat> list = new ArrayList<>();
+    private static final List<Chat> list = new ArrayList<>();
 
     @Getter @NotNull private final String name;
     @Getter @Setter @NotNull private ChatSettings chatSettings;

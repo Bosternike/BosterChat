@@ -1,6 +1,7 @@
 package net.boster.chat.bukkit;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.boster.chat.bukkit.commands.BosterCommand;
 import net.boster.chat.bukkit.config.BukkitConfig;
 import net.boster.chat.bukkit.data.PlayerData;
@@ -11,7 +12,6 @@ import net.boster.chat.bukkit.lib.LibsProvider;
 import net.boster.chat.bukkit.lib.PAPISupport;
 import net.boster.chat.bukkit.lib.VaultSupport;
 import net.boster.chat.bukkit.listeners.PlayerListener;
-import net.boster.chat.bukkit.utils.VersionManager;
 import net.boster.chat.common.BosterChatPlugin;
 import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.chat.implementation.ChatPlaceholdersImpl;
@@ -21,7 +21,10 @@ import net.boster.chat.common.chat.settings.Settings;
 import net.boster.chat.common.commands.ChatCommand;
 import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.files.BosterChatFile;
+import net.boster.chat.common.log.ChatLog;
 import net.boster.chat.common.log.LogType;
+import net.boster.chat.common.placeholders.PlaceholdersRequest;
+import net.boster.chat.common.provider.ChatLogProvider;
 import net.boster.chat.common.provider.PlaceholderProvider;
 import net.boster.chat.common.placeholders.PlaceholdersManager;
 import net.boster.chat.common.provider.BosterChatProvider;
@@ -29,10 +32,12 @@ import net.boster.chat.common.sender.CommandSender;
 import net.boster.chat.common.sender.PlayerSender;
 import net.boster.chat.common.utils.ChatUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.Reader;
@@ -46,6 +51,8 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
     @Getter private BosterChatFile configFile;
     @Getter private BosterChatFile chatsFile;
 
+    @Getter @Setter @NotNull private ChatLog chatLog;
+
     private Settings settings;
     private ChatPlaceholders chatPlaceholders;
 
@@ -55,16 +62,15 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
         instance = this;
         BosterChatProvider.setProvider(this);
 
+        chatLog = new ChatLogProvider(getDataFolder());
+
         BosterFile configF = new BosterFile("config");
         BosterFile chatsF = new BosterFile("chats");
 
         String PREFIX = "\u00a76+\u00a7a---------------- \u00a7dBosterChat \u00a7a------------------\u00a76+";
+        Bukkit.getConsoleSender().sendMessage(PREFIX);
 
         LibsProvider.load();
-        ClanSupport.load();
-        VersionManager.load();
-        VaultSupport.load();
-        PAPISupport.load();
 
         chatsF.loadFile(true, true);
         configF.loadFile(true, true);
@@ -81,7 +87,6 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
 
         BosterCommand.load();
 
-        Bukkit.getConsoleSender().sendMessage(PREFIX);
         Bukkit.getConsoleSender().sendMessage("\u00a7d[\u00a7bBosterChat\u00a7d] \u00a7fThe plugin has been \u00a7dEnabled\u00a7f!");
         Bukkit.getConsoleSender().sendMessage("\u00a7d[\u00a7bBosterChat\u00a7d] \u00a7fPlugin creator: \u00a7dBosternike");
         Bukkit.getConsoleSender().sendMessage("\u00a7d[\u00a7bBosterChat\u00a7d] \u00a7fPlugin version: \u00a7d" + getDescription().getVersion());
@@ -89,6 +94,10 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
     }
 
     public void onDisable() {
+        for(PlayerData data : PlayerData.players()) {
+            data.saveData();
+        }
+        BosterChatProvider.disable();
         PlayerData.clearAll();
     }
 
@@ -143,6 +152,30 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
     }
 
     @Override
+    public ConfigurationSection loadConfiguration(@NotNull String s) {
+        YamlConfiguration c = new YamlConfiguration();
+        try {
+            c.loadFromString(s);
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        return new BukkitConfig(c);
+    }
+
+    @Override
+    public ConfigurationSection emptyConfiguration() {
+        return new BukkitConfig(new YamlConfiguration());
+    }
+
+    @Override
+    public BosterChatFile createFile(@NotNull String name, @Nullable String directory) {
+        BosterFile f = new BosterFile(name);
+        f.setDirectory(directory != null ? directory : "");
+        f.loadFile(false, true);
+        return new BosterChatFileImpl(f);
+    }
+
+    @Override
     public @NotNull Collection<? extends PlayerSender> getPlayers() {
         return PlayerData.players();
     }
@@ -187,7 +220,7 @@ public class BosterChatBukkit extends JavaPlugin implements BosterChatPlugin {
         r = r.replace("%towny_nation%", nation != null ? nation : chatPlaceholders.NO_NATION());
 
         for(PlaceholderProvider<Player> pp : PlaceholdersManager.requestPlaceholders(Player.class)) {
-            r = pp.getFunction().apply(p);
+            r = pp.getFunction().apply(new PlaceholdersRequest<>(p, sender, chat, r));
         }
 
         String rc = chat.getRankColorMap().get(sender.getRank());
