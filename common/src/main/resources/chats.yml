@@ -40,12 +40,16 @@ default-example:
   # If this feature is enabled, when player sends a message it will be also sent to console.
   # Set to "false" or remove this to disable.
   LogToConsole: true
+  # Requirement for using Message pattern (config option ChatColor).
+  MessagePatterPermissionRequirement:
+    Enabled: false
+    Permission: 'boster.chat.message.pattern.local'
   # The message will be sent to each player within this distance.
   # Set to -1 or just remove this field for unlimited distance.
   showDistance: 100
   # Remove this list to allow chat in any world.
   worlds:
-    - 'world'
+  - 'world'
   # Permission to see this chat.
   Permission:
     Enabled: false

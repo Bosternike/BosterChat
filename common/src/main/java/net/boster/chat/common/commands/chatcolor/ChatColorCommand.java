@@ -1,9 +1,11 @@
-package net.boster.chat.common.commands;
+package net.boster.chat.common.commands.chatcolor;
 
 import net.boster.chat.common.BosterChat;
 import net.boster.chat.common.BosterChatPlugin;
 import net.boster.chat.common.chat.pattern.MessagePattern;
 import net.boster.chat.common.chat.pattern.patterns.ColorPattern;
+import net.boster.chat.common.commands.ChatCommandWrapper;
+import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.provider.ChatColorProvider;
 import net.boster.chat.common.sender.CommandSender;
 import net.boster.chat.common.sender.PlayerSender;
@@ -12,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class ChatColorCommand extends ChatCommandWrapper {
 
-    public ChatColorCommand(@NotNull BosterChatPlugin plugin, @NotNull String name, @NotNull String... aliases) {
-        super(plugin, name, aliases);
+    public ChatColorCommand(@NotNull BosterChatPlugin plugin, @NotNull ConfigurationSection section) {
+        super(plugin, section);
     }
 
     @Override
@@ -75,9 +77,9 @@ public class ChatColorCommand extends ChatCommandWrapper {
             t = "off";
         }
 
-        p.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.chatColor." + t + "-self").replace("%color%", arg)));
+        p.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.chatColor." + t + "-self")).replace("%color%", arg));
         if(p != sender) {
-            sender.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.chatColor." + t + "-others").replace("%player%", p.getName()).replace("%color%", arg)));
+            sender.sendMessage(ChatUtils.toColorAndPrefix(plugin.config().getString("Messages.chatColor." + t + "-others")).replace("%player%", p.getName()).replace("%color%", arg));
         }
     }
 

@@ -58,7 +58,7 @@ public class SimplePatternReader implements PatternReader {
             } else {
                 return new ColorPattern(s);
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(initial != null ? "Could not read: \"" + initial + "\" section:" + s : "Could not read: " + s, e);
         }
     }

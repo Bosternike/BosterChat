@@ -1,6 +1,11 @@
 package net.boster.chat.common.utils;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.function.Function;
 
 public class TextUtils {
 
@@ -118,5 +123,27 @@ public class TextUtils {
 
     public static boolean isIP(@NotNull String s) {
         return s.matches(IP_REGEX);
+    }
+
+    @Contract("_, _, !null -> !null")
+    @Nullable
+    public static String buildOneLineList(@NotNull Collection<? extends String> c, @NotNull String separator, @Nullable String def) {
+        return buildOneLineList(c, separator, null, def);
+    }
+
+    @Contract("_, _, _, !null -> !null")
+    @Nullable
+    public static String buildOneLineList(@NotNull Collection<? extends String> c, @NotNull String separator, @Nullable Function<@NotNull String, @NotNull String> formatter, @Nullable String def) {
+        if(c.isEmpty()) return def;
+
+        String s = "";
+        String a = "";
+
+        for(String o : c) {
+            s += a + (formatter != null ? formatter.apply(o) : o);
+            a = separator;
+        }
+
+        return s;
     }
 }

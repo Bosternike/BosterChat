@@ -15,6 +15,7 @@ import net.boster.chat.common.chat.implementation.SettingsImpl;
 import net.boster.chat.common.chat.placeholders.ChatPlaceholders;
 import net.boster.chat.common.chat.settings.Settings;
 import net.boster.chat.common.commands.ChatCommand;
+import net.boster.chat.common.commands.RegisteredCommand;
 import net.boster.chat.common.config.ConfigurationSection;
 import net.boster.chat.common.files.BosterChatFile;
 import net.boster.chat.common.log.ChatLog;
@@ -27,7 +28,9 @@ import net.boster.chat.common.provider.BosterChatProvider;
 import net.boster.chat.common.sender.CommandSender;
 import net.boster.chat.common.sender.PlayerSender;
 import net.boster.chat.common.utils.ChatUtils;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -50,9 +53,9 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
 
     @Getter private BosterChatFile configFile;
     @Getter private BosterChatFile chatsFile;
+    @Getter private BosterChatFile directSettingsFile;
 
-    @Getter @Setter
-    @NotNull private ChatLog chatLog;
+    @Getter @Setter @NotNull private ChatLog chatLog;
 
     private Settings settings;
     private ChatPlaceholders chatPlaceholders;
@@ -67,6 +70,7 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
 
         BosterFile configF = new BosterFile("config");
         BosterFile chatsF = new BosterFile("chats");
+        BosterFile dsF = new BosterFile("direct-settings");
 
         String PREFIX = "\u00a76+\u00a7a---------------- \u00a7dBosterChat \u00a7a------------------\u00a76+";
         getProxy().getConsole().sendMessage(new TextComponent(PREFIX));
@@ -75,9 +79,11 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
 
         configF.loadFile(true, true);
         chatsF.loadFile(true, true);
+        dsF.loadFile(true, true);
 
         configFile = new BosterChatFileImpl(configF);
         chatsFile = new BosterChatFileImpl(chatsF);
+        directSettingsFile = new BosterChatFileImpl(dsF);
 
         settings = new SettingsImpl(configFile.getConfig().getSection("Settings"));
         chatPlaceholders = new ChatPlaceholdersImpl(configFile.getConfig().getSection("Placeholders"));
@@ -93,11 +99,11 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
     }
 
     public void onDisable() {
-        for(PlayerData data : PlayerData.players()) {
-            data.saveData();
-        }
+        savePlayersData();
+
         BosterChatProvider.disable();
-        PlayerData.clearAll();
+
+        clearPlayersData();
     }
 
     @Override
@@ -126,8 +132,8 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
     }
 
     @Override
-    public void registerCommand(@NotNull ChatCommand command) {
-        getProxy().getPluginManager().registerCommand(this, new Command(command.getName(), null, command.getAliases()) {
+    public @NotNull RegisteredCommand registerCommand(@NotNull ChatCommand command) {
+        Command cmd = new Command(command.getName(), null, command.getAliases()) {
             @Override
             public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
                 if(sender instanceof ProxiedPlayer) {
@@ -136,7 +142,21 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
                     command.execute(console, args);
                 }
             }
-        });
+        };
+
+        getProxy().getPluginManager().registerCommand(this, cmd);
+
+        return new RegisteredCommand() {
+            @Override
+            public @NotNull Object getInstance() {
+                return cmd;
+            }
+
+            @Override
+            public void unregister() {
+                getProxy().getPluginManager().unregisterCommand(cmd);
+            }
+        };
     }
 
     @Override
@@ -199,6 +219,27 @@ public class BosterChatBungee extends Plugin implements BosterChatPlugin {
         if(!(t instanceof ProxiedPlayer)) return null;
 
         return PlayerData.get((ProxiedPlayer) t);
+    }
+
+    @Override
+    public @NotNull HoverEvent createHover(@NotNull String s) {
+        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(s));
+    }
+
+    @Override
+    public void savePlayersData() {
+        try {
+            for(PlayerData data : PlayerData.players()) {
+                data.saveData();
+            }
+        } catch (NoClassDefFoundError ignored) {}
+    }
+
+    @Override
+    public void clearPlayersData() {
+        try {
+            PlayerData.clearAll();
+        } catch (NoClassDefFoundError ignored) {}
     }
 
     public @NotNull String toPlaceholders(@NotNull PlayerData sender, @NotNull String message, @NotNull Chat chat) {

@@ -1,7 +1,11 @@
 package net.boster.chat.common.handler;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.boster.chat.common.events.ChatEvent;
+import net.boster.chat.common.events.DirectMessageEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +13,7 @@ import java.util.List;
 public abstract class ChatHandler {
 
     private static final List<ChatHandler> handlerList = new LinkedList<>();
+    @Getter @Setter @Nullable private static DirectMessageHandler directMessageHandler;
 
     public static void registerHandler(@NotNull ChatHandler handler) {
         handlerList.add(handler);
@@ -26,6 +31,12 @@ public abstract class ChatHandler {
 
             h.onEvent(event);
         }
+    }
+
+    public static void directMessageEvent(@NotNull DirectMessageEvent event) {
+        if(directMessageHandler == null) return;
+
+        directMessageHandler.onEvent(event);
     }
 
     public abstract boolean ignoreCancelled();

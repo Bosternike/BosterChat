@@ -2,6 +2,7 @@ package net.boster.chat.common.chat;
 
 import lombok.*;
 import net.boster.chat.common.config.ConfigurationSection;
+import net.boster.chat.common.sender.PlayerSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,7 @@ public class ChatSettings {
     @Getter @Setter @NotNull private List<String> servers;
     @Getter @Setter @Nullable private String seeMessagesPermission;
     @Getter @Setter @Nullable private Permission permission;
+    @Getter @Setter @Nullable private String messagePatternPermission;
 
     public ChatSettings(@NotNull ConfigurationSection section) {
         if(section.getBoolean("Log.Enabled", false)) {
@@ -42,8 +44,17 @@ public class ChatSettings {
 
         ConfigurationSection sc = section.getSection("SeeMessagesPermission");
         if(sc != null && sc.getBoolean("Enabled", false)) {
-            this.seeMessagesPermission = sc.getString("SeeMessagesPermission");
+            this.seeMessagesPermission = sc.getString("perm");
         }
+
+        ConfigurationSection smp = section.getSection("MessagePatterPermissionRequirement");
+        if(smp != null && smp.getBoolean("Enabled", false)) {
+            this.messagePatternPermission = smp.getString("Permission");
+        }
+    }
+
+    public boolean canUseMessagePattern(@NotNull PlayerSender sender) {
+        return messagePatternPermission == null || sender.hasPermission(messagePatternPermission);
     }
 
     @AllArgsConstructor

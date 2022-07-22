@@ -7,6 +7,7 @@
 # /bosterchat - boster.chat.command
 # /bosterchat reload - boster.chat.command.reload
 # /bosterchat help - boster.chat.command.help
+# /bosterchat <command> - boster.chat.command.<command>
 #
 # /chatcolor - boster.chat.chatcolor
 # /chatcolor (unlimited chatcolors) - boster.chat.chatcolor.unlimited
@@ -79,6 +80,15 @@ ChatColor:
       Others:
       - 'smart:a;b;c'
 
+# Command usage - /chatsettings help
+ChatSettings:
+  Enabled: true
+  PermissionRequirement:
+    Enabled: false
+    perm: 'boster.chat.settings'
+  name: chatsettings
+  aliases:
+  - csettings
 
 Settings:
   # All following settings can be configured in chat settings.
@@ -171,7 +181,7 @@ CooldownMessage:
     text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
 
 Messages:
-  noPermission: "%prefix% &cYou don't have permission for this command!"
+  noPermission: "%prefix% &cYou don't have permission to this command!"
   noArgs: '%prefix% &fType &d/bosterchat help &ffor help!'
   reload: '%prefix% &fThe plugin has been reloaded!'
   invalidSyntax: '%prefix% &fWrong syntax&7: &c%syntax%'
@@ -180,10 +190,15 @@ Messages:
   - '&f'
   - '&f &dBosterChat &7> &6Help'
   - '&f Reload the plugin &7- &d/bosterchat reload'
+  - '&f Chat info &7- &d/bosterchat info [chat]'
+  - '&f Player profile &7- &d/bosterchat profile [player]'
   - ''
-  - '&f Set own chat color - /chatcolor [color]'
-  - '&f Set chat color for other player - /chatcolor [color] [player]'
+  - '&f Set own chat color &7- &d/chatcolor [color]'
+  - '&f Set chat color for other player &7- &d/chatcolor [color] [player]'
+  - '&f Chat settings help &7- &d/chatsettings help'
   - '&f'
+  profile:
+    usage: '%prefix% &fUsage &7- &d/bosterchat player-info [player]'
   chatColor:
     usage: '%prefix% &fUsage &7- /chatcolor [color]'
     limit: "%prefix% &cYou don't have permission for unlimited chat colors."
@@ -192,6 +207,23 @@ Messages:
     set-others: "%prefix% &a%player%&f's chat color has been set to %color%&f!"
     off-self: '%prefix% &fYour chat color has been removed!'
     off-others: "%prefix% &a%player%&f's chat color has been removed!"
+  chatSettings:
+    help:
+    - '&f'
+    - "&f Disable chat (you won't receive messages from this chat) &7- &d/chatsettings disable [chat]"
+    - '&f Enable chat (you will receive messages from this chat) &7- &d/chatsettings enable [chat]'
+    - '&f'
+    noChat: '%prefix% &fChat &c%name%&f could not be found.'
+    chatDisabled: '%prefix% &fThis chat is &cdisabled&f for you.'
+    disable:
+      usage: '%prefix% &fUsage &7- &d/chatsettings disable [chat]'
+      already: '%prefix% &fThis chat already disabled for you.'
+      success: '%prefix% &fChat &a%name%&f has been &cdisabled&f for you.'
+    enable:
+      usage: '%prefix% &fUsage &7- &d/chatsettings enable [chat]'
+      already: '%prefix% &fThis chat already enabled for you.'
+      success: '%prefix% &fChat &a%name%&f has been &aenabled&f for you.'
+
 
 
 

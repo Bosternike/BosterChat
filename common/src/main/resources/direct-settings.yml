@@ -1,0 +1,218 @@
+# Set "false" to disable and "true" to enable.
+Enabled: true
+
+Commands:
+  Message:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: false
+      perm: 'boster.chat.direct.msg'
+    name: message
+    aliases:
+    - msg
+    - m
+  Reply:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: false
+      perm: 'boster.chat.direct.reply'
+    name: reply
+    aliases:
+    - r
+  Ignore:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: false
+      perm: 'boster.chat.direct.ignore'
+    name: ignore
+    #aliases:
+    #- anything
+  UnIgnore:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: false
+      perm: 'boster.chat.direct.unignore'
+    name: unignore
+    #aliases:
+    #- anything
+
+Log:
+  Enabled: true
+  Format: '[Direct] [%date%] %player% -> %receiver%: %message%'
+# If you don't want players to be able to direct message self set this to "true".
+NoSelf:
+  Enabled: false
+  message: "&cYou can't message yourself."
+# If this feature is enabled, when player sends a message it will be also sent to console.
+# Set to "false" or remove this to disable.
+LogToConsole: true
+# Requirement for using Message pattern (config option ChatColor).
+MessagePatterPermissionRequirement:
+  Enabled: false
+  Permission: 'boster.chat.message.pattern.local'
+# Permission to see this chat.
+Permission:
+  Enabled: false
+  perm: 'boster.chat.default.use'
+  message: "&cYou don't have permission to use default chat!"
+
+# This message will be sent to receiver.
+Receiver:
+  # You can name rows as you want.
+  # 1 row = one message in chat.
+  1:
+    component:
+      text: '&f[&a%display_name%&f -> &aYou&f] %rank_color%%message%'
+      hover: '&fClick here to message this player'
+      action:
+        type: SUGGEST_COMMAND
+        string: '/msg %name% '
+
+# This message will be sent to message sender.
+Sender:
+  # You can name rows as you want.
+  # 1 row = one message in chat.
+  1:
+    component:
+      text: '&f[&aYou&f -> &a%receiver%&f] %rank_color%%message%'
+      hover: '&fClick here to message this player'
+      action:
+        type: SUGGEST_COMMAND
+        string: '/msg %name% '
+
+# This message will be sent to console if setting "LogToConsole" enabled.
+Console:
+  # You can name rows as you want.
+  # 1 row = one message in chat.
+  1:
+    component:
+      text: '&f[&a%display_name%&f -> &a%receiver%&f] %rank_color%%message%'
+
+# Settings
+Settings:
+  # All following settings can be configured in chat settings.
+  # End messages with dot?
+  DotInsertion:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: true
+      Permission: 'boster.chat.dot'
+  # Should the first character of message be capital?
+  CapitalizeMessage:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: true
+      Permission: 'boster.chat.capitalize'
+  # Should player be able to use color code (like &)?
+  ColorizeMessage:
+    Enabled: true
+    PermissionRequirement:
+      Enabled: true
+      Permission: 'boster.chat.color'
+  # Check for messages similarity.
+  CheckSimilarity:
+    Enabled: true
+    # Similarity in percents.
+    # If messages similarity >= 80%, message will be rejected.
+    Similarity: 80
+    Message:
+    - '&cYour messages are too similar.'
+  # Check for exact words.
+  DeniedWords:
+    # Permission to override this check.
+    OverridePermission:
+      Enabled: false
+      Permission: 'boster.chat.denied.words.override'
+    Enabled: true
+    list:
+    - 'fuck'
+    Result:
+      # It will replace each character of the word with the following symbol.
+      replaceChars: '*'
+  # Check if message contains any of the following list.
+  DeniedContents:
+    # Permission to override this check.
+    OverridePermission:
+      Enabled: false
+      Permission: 'boster.chat.denied.contents.override'
+    Enabled: true
+    list:
+    - 'fuckx'
+    Result:
+      message:
+      - "&cSuch contents as '%content%' are disallowed."
+  DenyAddress:
+    Enabled: true
+    # Permission to override this check.
+    OverridePermission:
+      Enabled: false
+      Permission: 'boster.chat.deny.address.override'
+    Result:
+      # It will replace the whole IP with the following word.
+      # WARNING: Result "replaceChars" IS NOT SUPPORTED!
+      replace: 'your.server.net'
+
+  # Here is an instance of how you can make a cooldown.
+  Cooldown:
+    # If player has permission declared below, he will be overriding cooldown.
+    # Remove this field to disable this feature.
+    SkipPermission: 'boster.chat.cooldown.skip.default'
+    Time:
+      days: 0
+      hours: 0
+      minutes: 0
+      seconds: 5
+    Format:
+      second: 'second'
+      some_seconds: 'seconds'
+      seconds: 'seconds'
+      minute: 'minute'
+      some_minutes: 'minutes'
+      minutes: 'minutes'
+      hour: 'hour'
+      some_hours: 'hours'
+      hours: 'hours'
+      day: 'day'
+      some_days: 'days'
+      days: 'days'
+    Messages:
+      Message:
+        Enabled: true
+        text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
+      Title:
+        Enabled: false
+        text: '&fCooldown!'
+      SubTitle:
+        Enabled: false
+        text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
+      Actionbar:
+        Enabled: true
+        text: '&dBosterChat &8| &fWait &6%time%&f before using it again.'
+  Replaces:
+    thx: 'thanks'
+    ':D': 'ツ'
+    java: '♨'
+  RankColors:
+    # Default color. If player rank wasn't found or no matches with the following list, will return "default" string.
+    default: '&f'
+    YT: '&c'
+    MVP: '&b'
+    VIP: '&a'
+
+Messages:
+  msgUsage: '%prefix% &cUsage - /msg [player] [message]'
+  replyUsage: '%prefix% &cUsage - /r [message]'
+  noSuchPlayer: '%prefix% &fPlayer &c%name%&f could not be found.'
+  directDisabled: '%prefix% &fPlayer &c%name%&f disabled direct messaging.'
+  ignoring: '%prefix% &fPlayer &c%name%&f ignores you.'
+  nothingToReply: "%prefix% &fYou've already replied all messages or you haven't received any yet."
+  ignore:
+    usage: '%prefix% &fUsage &7- &d/ignore [player]'
+    self: "%prefix% &fYou can't ignore self."
+    already: '%prefix% &fYou are already ignoring &c%name%&f.'
+    noPlayer: '%prefix% &fPlayer &c%name%&f does not exist.'
+    success: '%prefix% &fPlayer &a%name%&f has been added to ignore-list.'
+  unIgnore:
+    usage: '%prefix% &fUsage &7- &d/unignore [player]'
+    notIgnored: '%prefix% &fYou are not ignoring &c%name%&f.'
+    success: '%prefix% &fPlayer &a%name%&f has been removed from ignore-list.'

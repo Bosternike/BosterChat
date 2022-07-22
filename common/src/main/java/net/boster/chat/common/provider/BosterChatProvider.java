@@ -5,8 +5,15 @@ import net.boster.chat.common.BosterChat;
 import net.boster.chat.common.BosterChatPlugin;
 import net.boster.chat.common.chat.Chat;
 import net.boster.chat.common.commands.BosterChatCommand;
-import net.boster.chat.common.commands.ChatColorCommand;
+import net.boster.chat.common.commands.button.ChatButtonCommandCompleter;
+import net.boster.chat.common.commands.chatcolor.ChatColorCommand;
 import net.boster.chat.common.commands.ChatCommandWrapper;
+import net.boster.chat.common.commands.RegisteredCommand;
+import net.boster.chat.common.commands.chatsettings.ChatSettingsCommand;
+import net.boster.chat.common.commands.direct.DirectMessageCommand;
+import net.boster.chat.common.commands.direct.IgnoreCommand;
+import net.boster.chat.common.commands.direct.ReplyCommand;
+import net.boster.chat.common.commands.direct.UnIgnoreCommand;
 import net.boster.chat.common.data.EnumStorage;
 import net.boster.chat.common.data.ConnectedDatabase;
 import net.boster.chat.common.data.database.MySqlConnectionUtils;
@@ -16,7 +23,8 @@ import net.boster.chat.common.data.setter.FileSetter;
 import net.boster.chat.common.data.setter.MySqlSetter;
 import net.boster.chat.common.data.setter.SQLiteSetter;
 import net.boster.chat.common.handler.ChatHandler;
-import net.boster.chat.common.handler.ChatHandlerWrapper;
+import net.boster.chat.common.handler.SimpleChatHandler;
+import net.boster.chat.common.handler.SimpleDMHandler;
 import net.boster.chat.common.log.LogType;
 import net.boster.chat.common.utils.ConfigUtils;
 import net.boster.chat.common.config.ConfigurationSection;
@@ -31,6 +39,16 @@ public class BosterChatProvider {
     private static BosterChatPlugin plugin;
     private static DataSetter setter;
     private static ConnectedDatabase connectedDatabase;
+
+    public static RegisteredCommand buttonCmdCompleter;
+    public static RegisteredCommand bosterChatCommand;
+    public static RegisteredCommand chatColorCommand;
+    public static RegisteredCommand chatSettingsCommand;
+
+    private static RegisteredCommand directMessageCommand;
+    private static RegisteredCommand replyCommand;
+    private static RegisteredCommand ignoreCommand;
+    private static RegisteredCommand unIgnoreCommand;
 
     public static void setProvider(@NotNull BosterChatPlugin plugin) {
         if(BosterChatProvider.plugin != null) {
@@ -61,12 +79,16 @@ public class BosterChatProvider {
         ChatColorProvider.load();
         loadDataSetter();
         loadCooldowns();
+        loadDirectSettings();
         loadChats();
 
-        plugin.registerCommand(new BosterChatCommand(plugin));
-        getCommand(plugin.config().getSection("ChatColor"), ChatColorCommand.class);
+        buttonCmdCompleter = plugin.registerCommand(new ChatButtonCommandCompleter(plugin));
+        bosterChatCommand = plugin.registerCommand(new BosterChatCommand(plugin));
 
-        ChatHandler.registerHandler(new ChatHandlerWrapper());
+        chatColorCommand = getCommand(plugin.config().getSection("ChatColor"), ChatColorCommand.class);
+        chatSettingsCommand = getCommand(plugin.config().getSection("ChatSettings"), ChatSettingsCommand.class);
+
+        ChatHandler.registerHandler(new SimpleChatHandler());
     }
 
     public static void disable() {
@@ -102,6 +124,59 @@ public class BosterChatProvider {
         Chat.sort();
     }
 
+    public static void loadDirectSettings() {
+        ConfigurationSection c = plugin.getDirectSettingsFile().getConfig();
+        if(c.getBoolean("Enabled", false)) {
+            Chat chat = new Chat(c, "direct-chat");
+            chat.clear();
+
+            ConfigurationSection sender = c.getSection("Sender");
+            if(sender == null) {
+                plugin.log("&fCould not load direct settings. Required rows section: &f'&cSender&f'", LogType.WARNING);
+                return;
+            }
+
+            ConfigurationSection receiver = c.getSection("Receiver");
+            if(receiver == null) {
+                plugin.log("&fCould not load direct settings. Required rows section: &f'&cReceiver&f'", LogType.WARNING);
+                return;
+            }
+
+            chat.loadRows(sender, "Sender");
+            chat.loadRows(receiver, "Receiver");
+
+            ConfigurationSection console = c.getSection("Console");
+            if(console != null) {
+                chat.loadRows(console, "Console");
+            }
+
+            ChatHandler.setDirectMessageHandler(new SimpleDMHandler(chat));
+
+            getCommand(c.getSection("Commands.Message"), DirectMessageCommand.class);
+            getCommand(c.getSection("Commands.Reply"), ReplyCommand.class);
+            getCommand(c.getSection("Commands.Ignore"), IgnoreCommand.class);
+            getCommand(c.getSection("Commands.UnIgnore"), UnIgnoreCommand.class);
+        } else {
+            if(directMessageCommand != null) {
+                directMessageCommand.unregister();
+                directMessageCommand = null;
+            }
+            if(replyCommand != null) {
+                replyCommand.unregister();
+                replyCommand = null;
+            }
+            if(ignoreCommand != null) {
+                ignoreCommand.unregister();
+                ignoreCommand = null;
+            }
+            if(unIgnoreCommand != null) {
+                unIgnoreCommand.unregister();
+                unIgnoreCommand = null;
+            }
+            ChatHandler.setDirectMessageHandler(null);
+        }
+    }
+
     private static EnumStorage loadStorage() {
         try {
             return EnumStorage.valueOf(BosterChat.get().config().getString("Storage"));
@@ -113,6 +188,7 @@ public class BosterChatProvider {
     public static void loadDataSetter() {
         if(connectedDatabase != null) {
             connectedDatabase.closeConnection();
+            connectedDatabase = null;
         }
 
         setter = loadDataSetter(loadStorage());
@@ -143,15 +219,17 @@ public class BosterChatProvider {
         return new FileSetter();
     }
 
-    private static <T extends ChatCommandWrapper> void getCommand(@NotNull ConfigurationSection section, @NotNull Class<T> clazz) {
-        if(!section.getBoolean("Enabled", false)) return;
-        if(section.getString("name") == null) return;
+    private static <T extends ChatCommandWrapper> RegisteredCommand getCommand(@NotNull ConfigurationSection section, @NotNull Class<T> clazz) {
+        if(!section.getBoolean("Enabled", false)) return null;
+        if(section.getString("name") == null) return null;
 
         try {
-            plugin.registerCommand(clazz.getDeclaredConstructor(BosterChatPlugin.class, String.class, String[].class)
-                    .newInstance(plugin, section.getString("name"), section.getStringList("aliases").toArray(new String[]{})));
+            return plugin.registerCommand(clazz.getDeclaredConstructor(BosterChatPlugin.class, ConfigurationSection.class)
+                    .newInstance(plugin, section));
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 }

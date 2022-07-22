@@ -2,7 +2,9 @@ package net.boster.chat.common.utils;
 
 import net.boster.chat.common.config.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -76,6 +78,19 @@ public class ConfigUtils {
     }
 
     public static String configToString(@NotNull ConfigurationSection section) {
-        return new Yaml().dump(section.entries());
+        DumperOptions options = new DumperOptions();
+        Representer representer = new Representer();
+        Yaml yaml = new Yaml(representer, options);
+        options.setIndent(2);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        String dump = yaml.dump(section.entries());
+
+        if (dump.equals("{}\n")) {
+            dump = "";
+        }
+
+        return dump;
     }
 }

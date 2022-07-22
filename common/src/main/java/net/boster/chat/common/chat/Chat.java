@@ -3,6 +3,7 @@ package net.boster.chat.common.chat;
 import lombok.Getter;
 import lombok.Setter;
 import net.boster.chat.common.BosterChat;
+import net.boster.chat.common.chat.implementation.ChatRowImpl;
 import net.boster.chat.common.chat.implementation.SettingsImpl;
 import net.boster.chat.common.chat.settings.Settings;
 import net.boster.chat.common.config.ConfigurationSection;
@@ -25,6 +26,7 @@ public class Chat {
     @Getter @Setter @Nullable private Cooldown cooldown;
 
     @Getter @Setter @NotNull private List<ChatRow> rows = new ArrayList<>();
+    @Getter @Setter @NotNull private Map<String, List<ChatRow>> namedRows = new HashMap<>();
     @Getter @Setter @NotNull private Map<String, String> rankColorMap = new HashMap<>();
     @Getter @Setter @NotNull private Map<String, String> replacesMap = new HashMap<>();
 
@@ -49,9 +51,7 @@ public class Chat {
 
         ConfigurationSection r = section.getSection("rows");
         if(r != null) {
-            for(String rs : r.getKeys()) {
-                rows.add(new ChatRow(r.getSection(rs), rs));
-            }
+            loadRows(r, null);
         }
 
         ConfigurationSection cd = section.getSection("Cooldown");
@@ -70,6 +70,19 @@ public class Chat {
         if(rc != null) {
             for(String rs : rc.getKeys()) {
                 rankColorMap.put(rs, rc.getString(rs));
+            }
+        }
+    }
+
+    public void loadRows(@NotNull ConfigurationSection section, @Nullable String name) {
+        if(name == null) {
+            for(String rs : section.getKeys()) {
+                rows.add(new ChatRowImpl(section.getSection(rs), rs));
+            }
+        } else {
+            List<ChatRow> list = namedRows.computeIfAbsent(name, s -> new ArrayList<>());
+            for(String rs : section.getKeys()) {
+                list.add(new ChatRowImpl(section.getSection(rs), rs));
             }
         }
     }

@@ -8,7 +8,7 @@ import net.boster.chat.common.utils.ChatUtils;
 import net.boster.chat.common.utils.TextUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class ChatHandlerWrapper extends ChatHandler {
+public class SimpleChatHandler extends ChatHandler {
 
     @Override
     public boolean ignoreCancelled() {
@@ -30,6 +30,12 @@ public class ChatHandlerWrapper extends ChatHandler {
         }
 
         e.setCancelled(true);
+
+        if(sender.getDisabledChats().contains(c.getName())) {
+            sender.sendMessage(ChatUtils.toColorAndPrefix(BosterChat.get().config().getString("Messages.chatSettings.chatDisabled")));
+            return;
+        }
+
         if(!c.checkCooldown(sender)) return;
 
         new Thread(() -> {
@@ -47,7 +53,7 @@ public class ChatHandlerWrapper extends ChatHandler {
             sender.getRecentMessages().add(TextUtils.stripMessage(message));
 
             message = c.toFormat(sender, message);
-            if(sender.getMessagePattern() != null) {
+            if(sender.getMessagePattern() != null && c.getChatSettings().canUseMessagePattern(sender)) {
                 message = sender.getMessagePattern().process(message);
             }
 
