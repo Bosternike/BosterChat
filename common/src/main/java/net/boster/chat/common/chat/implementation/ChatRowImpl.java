@@ -22,10 +22,8 @@ public class ChatRowImpl implements ChatRow {
         this.components = new ArrayList<>();
         for(String s : section.getKeys()) {
             ConfigurationSection r = section.getSection(s);
-            if(r != null) {
-                if(r.getString("text") != null) {
-                    components.add(new ChatComponent(r));
-                }
+            if(r != null && r.getString("text") != null) {
+                components.add(new ChatComponent(r));
             }
         }
     }

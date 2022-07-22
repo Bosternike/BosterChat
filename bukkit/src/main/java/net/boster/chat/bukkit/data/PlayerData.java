@@ -197,23 +197,8 @@ public class PlayerData implements PlayerSender {
                 String s = toPlaceholders(cc.getText(), message, chat, placeholders);
                 sb.append(s);
                 BaseComponent[] tc = TextComponent.fromLegacyText(s);
-                HoverEvent hover = null;
-                if(cc.getHover() != null) {
-                    hover = VersionManager.buildHover(toPlaceholders(cc.getHover(), message, chat, placeholders));
-                }
-                ClickEvent click = null;
-                if(cc.getActionType() != null && cc.getActionString() != null) {
-                    click = new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat, placeholders));
-                }
 
-                for(int i = 0; i < tc.length; i++) {
-                    if(hover != null) {
-                        tc[i].setHoverEvent(hover);
-                    }
-                    if(click != null) {
-                        tc[i].setClickEvent(click);
-                    }
-                }
+                applyCH(cc, message, chat, tc);
 
                 for(BaseComponent t : tc) {
                     list.add((TextComponent) t);
@@ -273,23 +258,8 @@ public class PlayerData implements PlayerSender {
                 String s = toPlaceholders(cc.getText(), message, chat, null);
                 sb.append(s);
                 BaseComponent[] tc = TextComponent.fromLegacyText(s);
-                HoverEvent hover = null;
-                if(cc.getHover() != null) {
-                    hover = VersionManager.buildHover(toPlaceholders(cc.getHover(), message, chat, null));
-                }
-                ClickEvent click = null;
-                if(cc.getActionType() != null && cc.getActionString() != null) {
-                    click = new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat, null));
-                }
 
-                for(int i = 0; i < tc.length; i++) {
-                    if(hover != null) {
-                        tc[i].setHoverEvent(hover);
-                    }
-                    if(click != null) {
-                        tc[i].setClickEvent(click);
-                    }
-                }
+                applyCH(cc, message, chat, tc);
 
                 for(BaseComponent t : tc) {
                     list.add((TextComponent) t);
@@ -311,6 +281,26 @@ public class PlayerData implements PlayerSender {
         }
 
         return c;
+    }
+
+    private void applyCH(ChatComponent cc, String message, Chat chat, BaseComponent... tc) {
+        HoverEvent hover = null;
+        if(cc.getHover() != null) {
+            hover = VersionManager.buildHover(toPlaceholders(cc.getHover(), message, chat, null));
+        }
+        ClickEvent click = null;
+        if(cc.getActionType() != null && cc.getActionString() != null) {
+            click = new ClickEvent(cc.getActionType(), toPlaceholders(cc.getActionString(), message, chat, null));
+        }
+
+        for(int i = 0; i < tc.length; i++) {
+            if(hover != null) {
+                tc[i].setHoverEvent(hover);
+            }
+            if(click != null) {
+                tc[i].setClickEvent(click);
+            }
+        }
     }
 
     public String toPlaceholders(@NotNull String s, @NotNull String message, @NotNull Chat chat, @Nullable List<ChatMessagePlaceholder> placeholders) {

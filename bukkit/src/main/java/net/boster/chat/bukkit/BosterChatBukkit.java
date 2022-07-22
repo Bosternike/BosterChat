@@ -1,6 +1,5 @@
 package net.boster.chat.bukkit;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
 import net.boster.chat.bukkit.commands.BosterCommand;
@@ -42,7 +41,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

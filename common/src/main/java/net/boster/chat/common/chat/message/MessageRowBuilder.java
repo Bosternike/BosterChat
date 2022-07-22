@@ -14,14 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MessageRowBuilder {
 
     @Getter @Setter @NotNull private List<ChatComponent> components = new ArrayList<>();
 
-    public MessageRowBuilder append(@NotNull ChatComponent component) {
-        components.add(component);
+    public MessageRowBuilder append(@NotNull ChatComponent... component) {
+        components.addAll(Arrays.asList(component));
         return this;
     }
 

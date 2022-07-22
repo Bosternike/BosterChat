@@ -1,7 +1,6 @@
 package net.boster.chat.common.commands;
 
 import net.boster.chat.common.sender.CommandSender;
-import net.boster.chat.common.sender.PlayerSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

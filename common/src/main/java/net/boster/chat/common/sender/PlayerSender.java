@@ -1,7 +1,6 @@
 package net.boster.chat.common.sender;
 
 import net.boster.chat.common.chat.Chat;
-import net.boster.chat.common.chat.ChatRow;
 import net.boster.chat.common.chat.direct.DirectSession;
 import net.boster.chat.common.chat.direct.DirectSettings;
 import net.boster.chat.common.chat.message.ChatMessage;
@@ -12,7 +11,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 

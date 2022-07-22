@@ -21,7 +21,7 @@ public class CustomCommand extends Command implements TabExecutor {
     }
 
     @Override
-    public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args) {
         if(sender instanceof ProxiedPlayer) {
             command.execute(PlayerData.get((ProxiedPlayer) sender), args);
         } else {
